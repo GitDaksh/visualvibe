@@ -1,109 +1,187 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/*
+  VisualVibe design tokens.
+  The interface stays graphite and white; color comes from people (their video,
+  their person light) and from warnings. Keep new UI inside this palette.
+*/
+@theme {
+  --font-sans: var(--font-mona), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --color-studio: #121316;
+  --color-sidebar: #16171a;
+  --color-panel: #1a1b1f;
+  --color-raised: #222328;
+  --color-paper: #f3f2ee;
+  --color-mist: #c9c9cf;
+  --color-haze: #b4b4bb;
+  --color-fog: #8e8e96;
+  --color-tally: #d63a2f;
+  --color-tally-hover: #c0332a;
+  --color-tally-bright: #ff5a4e;
+  --color-tally-soft: #ff8a80;
+
+  --color-light-amber: #e8a25b;
+  --color-light-coral: #e57a6a;
+  --color-light-rose: #d27ca6;
+  --color-light-iris: #8d86e6;
+  --color-light-azure: #5c9ee8;
+  --color-light-teal: #4db6a6;
+  --color-light-moss: #93b66c;
+  --color-light-sand: #cdb27c;
+
+  --ease-out-soft: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  --animate-pop: pop 180ms var(--ease-out-soft);
+  --animate-rise: rise 900ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  --animate-light: light-in 1800ms ease-out 350ms both;
+  --animate-float: float-up 2600ms cubic-bezier(0.2, 0.7, 0.3, 1) forwards;
+  --animate-spin-slow: spin 900ms linear infinite;
+
 }
 
-.str-video__call-stats {
-  max-width: 500px;
+/* Phones held sideways (and very short windows): lay screens out side by side. */
+@custom-variant short (@media (max-height: 520px) and (min-width: 560px));
+
+@keyframes pop {
+  from { opacity: 0; transform: translateY(6px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes sheet-up {
+  from { transform: translateY(100%); }
+  to { transform: none; }
+}
+@keyframes rise {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes light-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes float-up {
+  0% { opacity: 0; transform: translateY(0) scale(0.6); }
+  12% { opacity: 1; transform: translateY(-24px) scale(1.12); }
+  70% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-300px) scale(1); }
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+    background-color: var(--color-studio);
+  }
+  body {
+    background-color: var(--color-studio);
+    color: var(--color-paper);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  ::selection {
+    background-color: rgb(243 242 238 / 0.25);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-paper);
+    outline-offset: 2px;
+  }
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--color-fog);
+  }
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(255 255 255 / 0.14) transparent;
+  }
+}
+
+@utility font-display {
+  font-stretch: 118%;
+  letter-spacing: -0.025em;
+}
+@utility font-wide {
+  font-stretch: 112%;
+}
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+}
+@utility glass {
+  background-color: rgb(24 25 28 / 0.72);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid rgb(255 255 255 / 0.08);
+}
+@utility pill-scrim {
+  background-color: rgb(12 12 14 / 0.55);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+/* Audio level bars next to a speaker's name. */
+.vv-bar {
+  transform-origin: 50% 50%;
+  animation: vv-bars 1.1s ease-in-out infinite;
+}
+.vv-bar:nth-child(2) { animation-delay: -0.35s; }
+.vv-bar:nth-child(3) { animation-delay: -0.7s; }
+@keyframes vv-bars {
+  0%, 100% { transform: scaleY(0.35); }
+  50% { transform: scaleY(1); }
+}
+
+/* Stream SDK elements we render through <ParticipantView>. We skip the SDK
+   stylesheet and style only the handful of elements we actually use. */
+.str-video__participant-view {
   position: relative;
-}
-
-.str-video__speaker-layout__wrapper {
-  max-height: 700px;
-}
-
-.str-video__participant-details {
-  color: white;
-}
-
-.str-video__menu-container {
-  color: white;
-}
-
-.str-video__notification {
-  color: white;
-}
-
-.str-video__participant-list {
-  background-color: #1c1f2e;
-  padding: 10px;
-  border-radius: 10px;
-  color: white;
-  height: 100%;
-}
-
-.str-video__call-controls__button {
-  height: 40px;
-}
-
-.glassmorphism {
-  background: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-}
-.glassmorphism2 {
-  background: rgba(18, 17, 17, 0.25);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-}
-
-.cl-providerIcon__github {
-  filter: invert(1);
-}
-
-.cl-userButtonPopoverActionButtonIcon {
-  color: white;
-}
-
-.cl-logoBox {
-  height: 40px;
-}
-.cl-dividerLine {
-  background: #252a41;
-  height: 2px;
-}
-
-.cl-socialButtonsIconButton {
-  border: 3px solid #565761;
-}
-
-.cl-internal-wkkub3 {
-  color: white;
-}
-.cl-userButtonPopoverActionButton {
-  color: white;
-}
-
-@layer utilities {
-  .flex-center {
-    @apply flex justify-center items-center;
-  }
-
-  .flex-between {
-    @apply flex justify-between items-center;
-  }
-}
-
-.show-block {
   width: 100%;
-  max-width: 350px;
+  height: 100%;
+  overflow: hidden;
+  border-radius: inherit;
+  background-color: var(--color-panel);
+}
+.str-video__video {
   display: block;
-  animation: show 0.7s forwards linear;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+  pointer-events: none;
+  background-color: var(--color-panel);
+}
+.str-video__video--tall,
+.str-video__video--screen-share {
+  object-fit: contain;
+  background-color: #0d0e10;
+}
+.str-video__video--mirror:not(:picture-in-picture) {
+  transform: scaleX(-1);
+}
+.str-video__video--not-playing {
+  opacity: 0;
 }
 
-@keyframes show {
-  0% {
-    animation-timing-function: ease-in;
-    width: 0%;
-  }
+/* In a call: toasts sit above the controls, and the page doesn't rubber-band on phones. */
+html[data-in-call],
+html[data-in-call] body {
+  overscroll-behavior: none;
+}
+html[data-in-call] [data-sonner-toaster] {
+  --offset-bottom: calc(104px + env(safe-area-inset-bottom)) !important;
+  --mobile-offset-bottom: calc(76px + max(12px, env(safe-area-inset-bottom))) !important;
+}
 
-  100% {
-    animation-timing-function: ease-in;
-    width: 100%;
+@media (prefers-reduced-motion: reduce) {
+  .vv-bar,
+  .animate-pop,
+  .animate-rise,
+  .animate-light,
+  .animate-float {
+    animation: none !important;
   }
 }

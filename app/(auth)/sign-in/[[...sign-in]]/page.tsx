@@ -1,12 +1,9 @@
-import { SignIn } from '@clerk/nextjs'
-import React from 'react'
+import type { Metadata } from "next";
+import { SignIn } from "@clerk/nextjs";
+import { authAppearance } from "@/components/auth/appearance";
 
-const SignInPage = () => {
-  return (
-    <main className='flex h-screen w-full items-center justify-center '>
-        <SignIn />
-    </main>
-  )
+export const metadata: Metadata = { title: "Sign in" };
+
+export default function SignInPage() {
+  return <SignIn appearance={authAppearance} />;
 }
-
-export default SignInPage

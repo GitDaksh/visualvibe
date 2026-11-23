@@ -1,12 +1,9 @@
-import { SignUp } from '@clerk/nextjs'
-import React from 'react'
+import type { Metadata } from "next";
+import { SignUp } from "@clerk/nextjs";
+import { authAppearance } from "@/components/auth/appearance";
 
-const SignUpPage = () => {
-  return (
-    <main className='flex h-screen w-full items-center justify-center '>
-        <SignUp />
-    </main>
-  )
+export const metadata: Metadata = { title: "Create your account" };
+
+export default function SignUpPage() {
+  return <SignUp appearance={authAppearance} />;
 }
-
-export default SignUpPage

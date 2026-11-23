@@ -1,137 +1,87 @@
 # VisualVibe
 
-**VisualVibe** is a modern video conferencing web application built using Next.js and TypeScript, designed to provide seamless virtual meetings with real-time video conferencing features. The app is powered by Clerk for user authorization and management, and utilizes Stream's API for handling video conferencing functionalities.
+Video meetings in your browser. Start a call in one click, send the link, and talk face to face. Chat, screen sharing and recordings are built in, and it works just as well on a phone as on a laptop.
 
-## Table of Contents
-1. [Features](#features)
-2. [Tech Stack](#tech-stack)
-3. [Setup Instructions](#setup-instructions)
-4. [Usage](#usage)
-5. [Folder Structure](#folder-structure)
-6. [API Reference](#api-reference)
-7. [Contributing](#contributing)
-8. [License](#license)
+![The call room in speaker view, with the chat open](docs/call-room.jpg)
 
----
+## What's inside
 
-## Features
+- **A lobby before every call.** Check your camera, mic and speakers, blur your background, and see who's already in.
+- **A call room lit by whoever's talking.** The speaker takes the stage and their video softly tints the room around it. Switch between speaker and grid views; screen shares get the whole stage.
+- **Made for every screen.** On phones the speaker fills the screen, you sit in a corner, and chat slides up as a sheet you can swipe away. Tablets and laptops get floating or docked panels.
+- **Chat, reactions and raised hands** that everyone sees live.
+- **Host tools.** Mute everyone, remove someone, record, or end the meeting for all.
+- **Scheduling.** Plan a meeting, copy its invite link, add it to Google Calendar or any calendar app.
+- **Your own room** at a link that never changes, with settings for how people join.
+- **Recordings** you can watch in the app at any speed, or download.
+- **Keyboard shortcuts** in calls: M mic, V camera, H raise hand, C chat, P people, G grid, Esc close panels.
 
-- **Real-Time Video Conferencing**: Utilize Stream's API to deliver high-quality video conferencing.
-- **User Authentication & Management**: Secure authentication powered by Clerk.
-- **Responsive UI**: Built with React components to ensure smooth user experiences across all devices.
-- **Type Safety**: Entire project is built using TypeScript for enhanced type safety and maintainability.
-- **Easy Integration**: Scalable and modular architecture, making it easy to add new features.
+<img src="docs/phones.jpg" alt="VisualVibe on a phone: in a call, the chat sheet, and the home screen" />
 
----
+## Run it on your computer
 
-## Tech Stack
+You need [Node.js](https://nodejs.org) 20 or newer.
 
-- **Framework**: [Next.js](https://nextjs.org/)
-- **Language**: TypeScript (`.tsx`)
-- **Authentication**: [Clerk](https://clerk.dev/)
-- **Video Conferencing**: [Stream API](https://getstream.io/)
-- **Styling**: Tailwind CSS (or mention any other if used)
-- **Deployment**: Vercel (if deployed, adjust if using a different service)
+1. **Make two free accounts and copy their keys**
+   - [Clerk](https://dashboard.clerk.com): create an application, then open **API keys**.
+   - [Stream](https://dashboard.getstream.io): create an app, then copy its **API key** and **secret**.
+2. **Download and install**
+   ```bash
+   git clone https://github.com/GitDaksh/visualvibe.git
+   cd visualvibe
+   npm install
+   ```
+3. **Add your keys.** Make a copy of the example file, then paste your four keys into `.env.local`.
+   ```bash
+   cp .env.example .env.local
+   ```
+4. **Start it**
+   ```bash
+   npm run dev
+   ```
+   Open http://localhost:3000, sign up and start a meeting. To test with a second person, open the invite link in another browser. (Phones only allow the camera on `https` sites, so use your deployed link for phone tests.)
 
----
+## Put it online with Vercel
 
-## Setup Instructions
+1. Go to [vercel.com/new](https://vercel.com/new) and import this repository. Keep the default settings.
+2. Under **Environment Variables**, add the same four keys from your `.env.local`.
+3. Click **Deploy**. Your site is live at `your-project.vercel.app`.
 
-To get started with **VisualVibe**, follow the instructions below:
+Clerk's development keys work on your `vercel.app` address. Its production keys need a domain of your own, so keep the development keys unless you buy one.
 
-### Prerequisites
+## Keeping it free
 
-- [Node.js](https://nodejs.org/) (v14 or above)
-- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/) package manager
-- [Clerk account](https://clerk.dev/) for authentication
-- [Stream API account](https://getstream.io/) for video conferencing
+The app is set up so a forgotten tab or a widely shared link can't quietly run up a bill:
 
----
+- **Every meeting has a time limit.** Calls end after 2 hours by default (change it with `CALL_MAX_DURATION_MINUTES`). People get a warning 5 minutes before.
+- **Personal rooms close their session** at the limit you pick on the **Your room** page, which can't be longer than the limit above.
+- **Each call has a size limit** of 10 people by default (`CALL_MAX_PARTICIPANTS`).
+- **Recording only starts when a host presses Record.**
+- **Background blur runs on the device** and only downloads its model when someone turns it on.
+- **No paid image processing.** Images ship as small, pre-sized files.
 
-### Installation
+For scale, Stream gives every account $100 of free video usage each month, which is around 66,000 participant minutes of HD video ([pricing](https://getstream.io/video/pricing/)). Vercel's Hobby plan and Clerk's free plan easily cover a personal project. If you never add a payment method to these services, there's nothing for them to charge.
 
-1. Clone the repository:
+## Project layout
 
-    ```bash
-    git clone https://github.com/GitDaksh/VisualVibe.git
-    cd VisualVibe
-    ```
+```
+app/                  pages: landing, sign in, home, meetings, recordings, your room, /meeting/[id]
+actions/              server actions: create and schedule meetings, room settings, call tokens
+components/meeting/   lobby, call room, stage, controls, chat and people panels
+components/…          dashboard, landing and shared UI pieces
+lib/                  Stream server helpers, meeting codes, time formatting
+```
 
-2. Install the dependencies:
+## Scripts
 
-    ```bash
-    npm install
-    ```
+| Command | What it does |
+| --- | --- |
+| `npm run dev` | Starts the app on http://localhost:3000 |
+| `npm run build` | Builds for production |
+| `npm run start` | Runs the production build |
+| `npm run lint` | Checks the code with ESLint |
+| `npm run typecheck` | Checks types with TypeScript |
 
-3. Set up environment variables:
+## Built with
 
-    Create a `.env.local` file in the root directory and add the following:
-
-    ```bash
-    NEXT_PUBLIC_CLERK_FRONTEND_API=<Your_Clerk_Frontend_API>
-    CLERK_API_KEY=<Your_Clerk_Backend_API_Key>
-    STREAM_API_KEY=<Your_Stream_API_Key>
-    ```
-
-4. Run the development server:
-
-    ```bash
-    npm run dev
-    ```
-
-    The app should now be running at `http://localhost:3000`.
-
----
-
-## Usage
-
-### Authentication
-- **Sign Up/Sign In**: VisualVibe uses Clerk to handle sign-ups and sign-ins. Users need to create an account to join or host video calls.
-
-### Video Conferencing
-- **Start/Join a Meeting**: Users can initiate or join meetings using the Stream API’s video conferencing features.
-- **UI Components**: The UI includes components for creating and managing meetings, chatting, and more.
-  
----
-
-
-## API Reference
-
-### Authentication (Clerk)
-
-- **Sign Up**: Redirects users to a sign-up page managed by Clerk.
-- **Sign In**: Clerk handles the sign-in process securely.
-
-### Video Conferencing (Stream API)
-
-- **Create Room**: Uses Stream API to create a video conferencing room.
-- **Join Room**: Allows users to join a room using a room ID.
-- **Chat**: Real-time chat functionality is included in every video call.
-
----
-
-## Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1. Fork the repository.
-2. Create a new feature branch (`git checkout -b feature/feature-name`).
-3. Commit your changes (`git commit -m 'Add new feature'`).
-4. Push to the branch (`git push origin feature/feature-name`).
-5. Create a pull request.
-
----
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## Acknowledgements
-
-- [Next.js](https://nextjs.org/)
-- [Clerk](https://clerk.dev/)
-- [Stream API](https://getstream.io/)
-
----
+[Next.js 15](https://nextjs.org), [React 19](https://react.dev), [Clerk](https://clerk.com), [Stream Video](https://getstream.io/video/), [Tailwind CSS 4](https://tailwindcss.com), [Radix UI](https://www.radix-ui.com) and the [Mona Sans](https://github.com/github/mona-sans) typeface.
